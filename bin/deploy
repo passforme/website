@@ -1,0 +1,32 @@
+#!/bin/sh
+# Publishes site/ to Cloudflare Pages by direct upload, from this machine:
+# runs the site's checks, then `wrangler pages deploy`. Nothing is built.
+#
+# Needs node (for npx) and config/deploy.env (ignored by Git; see
+# config/deploy.env.example): the account, the Pages project and how to
+# obtain the API token. The token is never written to a file: export
+# CLOUDFLARE_API_TOKEN yourself, or set CLOUDFLARE_API_TOKEN_COMMAND to a
+# command that prints it, such as `passforme get <item> --stdout`.
+set -eu
+cd "$(dirname "$0")/.."
+
+if [ -f config/deploy.env ]; then
+    # shellcheck disable=SC1091
+    . ./config/deploy.env
+fi
+: "${CLOUDFLARE_ACCOUNT_ID:?set it in config/deploy.env}"
+: "${PAGES_PROJECT:?set it in config/deploy.env}"
+if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+    : "${CLOUDFLARE_API_TOKEN_COMMAND:?export CLOUDFLARE_API_TOKEN or set CLOUDFLARE_API_TOKEN_COMMAND}"
+    CLOUDFLARE_API_TOKEN="$(sh -c "$CLOUDFLARE_API_TOKEN_COMMAND")"
+fi
+export CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN
+
+python3 tools/check.py
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ -n "$(git status --porcelain)" ]; then
+    echo "deploy: the working tree has uncommitted changes; publishing them anyway" >&2
+fi
+exec npx --yes wrangler@4 pages deploy site \
+    --project-name "$PAGES_PROJECT" --branch "$branch" --commit-dirty=true
