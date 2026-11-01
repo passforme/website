@@ -267,8 +267,7 @@ def main() -> None:
             for variant in KEYHOLES:
                 path = BRAND / "logo" / f"icon-{way}{variant}.svg"
                 path.write_text(icon(way, variant=variant))
-                if variant:  # the default's PNG is favicon/<way>/icon-512.png
-                    png_of_svg(path, path.with_suffix(".png"), 512, 512, tmp)
+                png_of_svg(path, path.with_suffix(".png"), 512, 512, tmp)
             square = tmp / f"square-{way}.svg"
             square.write_text(icon(way, rounded=False))
             # Wordmark in ink on light, in fog on dark, or in the mark's own colour.
