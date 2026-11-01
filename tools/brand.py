@@ -25,6 +25,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
@@ -123,22 +124,25 @@ def icon(way: str, rounded: bool = True, variant: str = "") -> str:
     )
 
 
-def wordmark_path(text: str) -> tuple[str, float, float, float]:
-    """Outlines of `text`, in font units with y down: path data, width,
-    ascender and descender."""
+def wordmark_path(text: str) -> tuple[str, tuple[float, float, float, float]]:
+    """Outlines of `text`, in font units with y down: path data and the
+    bounds of the ink (xmin, ymin, xmax, ymax). The logo and the wordmark
+    are laid out on the ink, not on the font's ascender and descender, so
+    that the mark sits centred on the letters as the eye sees them."""
     font = TTFont(FONTS / "bricolage-grotesque-latin-standard-normal.woff2")
     font = instantiateVariableFont(font, {"wght": 750, "opsz": 96, "wdth": 100})
     glyphs = font.getGlyphSet()
     cmap = font.getBestCmap()
     tracking = -0.01 * font["head"].unitsPerEm  # letter-spacing: -0.01em
     pen = SVGPathPen(glyphs)
+    bounds = BoundsPen(glyphs)
     x = 0.0
     for ch in text:
         name = cmap[ord(ch)]
-        glyphs[name].draw(TransformPen(pen, (1, 0, 0, -1, x, 0)))
+        for target in (pen, bounds):
+            glyphs[name].draw(TransformPen(target, (1, 0, 0, -1, x, 0)))
         x += glyphs[name].width + tracking
-    os2 = font["OS/2"]
-    return pen.getCommands(), x - tracking, os2.sTypoAscender, -os2.sTypoDescender
+    return pen.getCommands(), bounds.bounds
 
 
 def svg(width: float, height: float, body: str) -> str:
@@ -149,23 +153,25 @@ def svg(width: float, height: float, body: str) -> str:
 
 
 def logo(
-    way: str, ink: str, d: str, width: float, ascent: float, descent: float, variant: str = ""
+    way: str, ink: str, d: str, ink_box: tuple[float, float, float, float], variant: str = ""
 ) -> str:
-    """The mark beside the wordmark, centred on the text box; `ink` is the
-    wordmark's colour."""
-    box = ascent + descent
-    size = box * 0.86
-    gap = box * 0.2
+    """The mark beside the wordmark, centred on the letters' ink; `ink` is
+    the wordmark's colour."""
+    xmin, ymin, xmax, ymax = ink_box
+    height = ymax - ymin
+    size = height * 1.2
+    gap = height * 0.28
     pad = 40
+    top = ymin - (size - height) / 2  # the mark's top, in the text's coordinates
     symbol = (
-        f'  <g transform="translate({pad} {pad + (box - size) / 2:.0f}) scale({size / 64:.4f})">'
+        f'  <g transform="translate({pad} {pad:.0f}) scale({size / 64:.4f})">'
         f"{mark(way, variant=variant)}</g>\n"
     )
     text = (
-        f'  <path transform="translate({pad + size + gap:.0f} {pad + ascent:.0f})" '
+        f'  <path transform="translate({pad + size + gap - xmin:.0f} {pad - top:.0f})" '
         f'fill="{ink}" d="{d}"/>\n'
     )
-    return svg(size + gap + width + 2 * pad, box + 2 * pad, symbol + text)
+    return svg(size + gap + (xmax - xmin) + 2 * pad, size + 2 * pad, symbol + text)
 
 
 def font_faces() -> str:
@@ -241,7 +247,8 @@ def main() -> None:
     for sub in ("logo", "favicon", "social", "fonts"):
         (BRAND / sub).mkdir(parents=True, exist_ok=True)
 
-    d, width, ascent, descent = wordmark_path("passforme")
+    d, ink_box = wordmark_path("passforme")
+    xmin, ymin, xmax, ymax = ink_box
     pad = 40
     for name, ink in (
         ("wordmark-on-light", INK),
@@ -249,8 +256,10 @@ def main() -> None:
         ("wordmark-gold", GOLD),
         ("wordmark-brass", BRASS),
     ):
-        body = f'  <path transform="translate({pad} {pad + ascent:.0f})" fill="{ink}" d="{d}"/>\n'
-        (BRAND / "logo" / f"{name}.svg").write_text(svg(width + 2 * pad, ascent + descent + 2 * pad, body))
+        body = f'  <path transform="translate({pad - xmin:.0f} {pad - ymin:.0f})" fill="{ink}" d="{d}"/>\n'
+        (BRAND / "logo" / f"{name}.svg").write_text(
+            svg(xmax - xmin + 2 * pad, ymax - ymin + 2 * pad, body)
+        )
 
     with tempfile.TemporaryDirectory() as t:
         tmp = Path(t)
@@ -270,7 +279,7 @@ def main() -> None:
             ):
                 for variant in KEYHOLES:
                     path = BRAND / "logo" / f"{name}{variant}.svg"
-                    path.write_text(logo(way, ink, d, width, ascent, descent, variant))
+                    path.write_text(logo(way, ink, d, ink_box, variant))
                     vw, vh = (
                         float(v) for v in path.read_text().split('viewBox="0 0 ')[1].split('"')[0].split()
                     )
