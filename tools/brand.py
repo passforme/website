@@ -66,7 +66,7 @@ Fonts (SIL Open Font License)
 logo/      the logo, the mark and the wordmark: for light and dark backgrounds,
            and in one colour (gold, brass); the mark and the logo also with the
            keyhole cut out (-cutout, a hole the background shows through),
-           black (-black, ink) and white (-white, sheet)
+           black (-black, ink) and white (-white, sheet); every SVG has a PNG twin
 favicon/   favicon.ico, apple-touch-icon, 192 and 512 px icons, per colourway
 fonts/     the three fonts as the site serves them (variable woff2) and their licences
 social/    avatar and banners (Open Graph, GitHub, X, LinkedIn, YouTube)
@@ -260,9 +260,13 @@ def main() -> None:
         (BRAND / "logo" / f"{name}.svg").write_text(
             svg(xmax - xmin + 2 * pad, ymax - ymin + 2 * pad, body)
         )
+    wordmarks = sorted((BRAND / "logo").glob("wordmark-*.svg"))
 
     with tempfile.TemporaryDirectory() as t:
         tmp = Path(t)
+        for path in wordmarks:
+            vw, vh = (float(v) for v in path.read_text().split('viewBox="0 0 ')[1].split('"')[0].split())
+            png_of_svg(path, path.with_suffix(".png"), 1600, round(1600 * vh / vw), tmp)
         for way in WAYS:
             for variant in KEYHOLES:
                 path = BRAND / "logo" / f"icon-{way}{variant}.svg"
