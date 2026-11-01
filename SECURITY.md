@@ -8,7 +8,7 @@ it privately and give us time to fix it before it is made public.
 
 ## Reporting a vulnerability
 
-Write to **hello@passforme.com**, or use GitHub's private vulnerability
+Write to **security@passforme.com**, or use GitHub's private vulnerability
 reporting ("Report a vulnerability" under the repository's Security
 tab). Say what you found and how to reproduce it.
 
