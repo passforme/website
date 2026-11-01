@@ -64,6 +64,7 @@ the browser and nowhere else.
   the mark there and run it, never the files. It needs fontTools, brotli
   and Chromium; its docstring says how.
 
+[`CONTRIBUTING.md`](CONTRIBUTING.md) is where a contribution starts.
 The full rules, and the reasons behind them, are in
 [`AGENTS.md`](AGENTS.md), written for the people and the agents who
 work here.

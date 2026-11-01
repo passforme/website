@@ -28,7 +28,9 @@ Git, and never into a tracked file. Read it when it exists.
   repository.
 - **Commits** follow Conventional Commits (`feat(site):`, `fix(site):`,
   `docs:`, `ci:`, `chore:`), are signed, and carry **no AI attribution**:
-  no `Co-Authored-By`, no "Generated with", no session links.
+  no `Co-Authored-By`, no "Generated with", no session links. Outside
+  contributions are signed off under the DCO (`git commit -s`), as
+  `CONTRIBUTING.md` says.
 - `python3 tools/check.py` passes before every commit; CI runs it on
   every push.
 - **The guide documents the CLI as it is.** When a command or option of
@@ -63,6 +65,7 @@ tools/brand.py        generates the brand kit and the site's icons
 bin/deploy            publishes site/ to Cloudflare Pages from the laptop (below)
 config/               deploy.env.example, versioned; deploy.env, ignored, the real values
 README.md             for visitors of the repository: what the site is, preview, how to contribute
+CONTRIBUTING.md       what a contributor reads first: the rules in short, DCO sign-off
 SECURITY.md           how to report a weakness in the site (passforme itself: the main repository)
 .github/              CI (check.py on every push), the GitHub Pages mirror, Dependabot for the actions
 ```
