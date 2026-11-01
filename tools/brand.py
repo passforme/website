@@ -1,7 +1,9 @@
 """Builds the brand kit in brand/ and the site's icons, from one place.
 
-Two colourways of the mark (a keyhole on a rounded square): gold, the
-brand's main one, and brass, the darker brown. Everything is generated:
+Two colourways of the mark (a keyhole cut out of a rounded square, so
+the background shows through it): gold, the brand's main one, and brass,
+the darker brown. The logo and the wordmark come for light and dark
+backgrounds and in one colour (gold, brass). Everything is generated:
 SVGs here, PNGs and favicon.ico by headless Chromium, so a change to the
 palette or the mark is one edit and one run.
 
@@ -13,6 +15,7 @@ font. Needs fontTools and brotli (to read the site's woff2) and chromium:
     /tmp/brand/bin/python tools/brand.py
 """
 
+import math
 import shutil
 import struct
 import subprocess
@@ -49,7 +52,7 @@ Colours
   Ink     {INK}   text on light
   Night   {NIGHT}   dark background
   Paper   {PAPER}   light background
-  Sheet   {SHEET}   cards on light; the brass mark's keyhole
+  Sheet   {SHEET}   cards on light
   Fog     {INK_DARK}   text on dark
 
 Fonts (SIL Open Font License)
@@ -57,26 +60,53 @@ Fonts (SIL Open Font License)
   Source Sans 3        text
   JetBrains Mono       code
 
-logo/      the logo, the mark and the wordmark, for light and dark backgrounds
+logo/      the logo, the mark and the wordmark: for light and dark backgrounds,
+           and in one colour (gold, brass); the keyhole is cut out, never filled
 favicon/   favicon.ico, apple-touch-icon, 192 and 512 px icons, per colourway
 fonts/     the three fonts as the site serves them (variable woff2) and their licences
 social/    avatar and banners (Open Graph, GitHub, X, LinkedIn, YouTube)
 """
 
-# Colourway: the square's colour, the keyhole's colour.
-WAYS = {"gold": (GOLD, INK), "brass": (BRASS, SHEET)}
+# Colourway: the square's colour. The keyhole has none, it is a hole.
+WAYS = {"gold": GOLD, "brass": BRASS}
 
-KEYHOLE = '<circle cx="32" cy="26" r="9" fill="{k}"/><path d="M27.5 30h9l3 18h-15z" fill="{k}"/>'
+# The 64×64 frame of the mark: a rounded square, or a plain one for the
+# platforms that crop the icon themselves.
+ROUNDED = "M14 0H50A14 14 0 0 1 64 14V50A14 14 0 0 1 50 64H14A14 14 0 0 1 0 50V14A14 14 0 0 1 14 0Z"
+SQUARE = "M0 0H64V64H0Z"
+
+
+def keyhole() -> str:
+    """The keyhole as one outline, centred in the frame: a circle (centre
+    32,26, radius 9) merged with the neck below it (9 wide at the top, 15
+    at the bottom, down to y=48). One subpath, so that it can be cut out
+    of the frame with a single even-odd path, which every SVG reader
+    understands (masks and clip paths are not that lucky)."""
+    cx, cy, r = 32.0, 26.0, 9.0
+    (x0, y0), (x1, y1) = (27.5, 30.0), (24.5, 48.0)  # the neck's left side
+    dx, dy = x1 - x0, y1 - y0
+    fx, fy = x0 - cx, y0 - cy
+    a, b, c = dx * dx + dy * dy, 2 * (fx * dx + fy * dy), fx * fx + fy * fy - r * r
+    t = (-b + math.sqrt(b * b - 4 * a * c)) / (2 * a)  # where that side leaves the circle
+    x, y = x0 + t * dx, y0 + t * dy
+    return f"M{x:.2f} {y:.2f}A{r:g} {r:g} 0 1 1 {2 * cx - x:.2f} {y:.2f}L{2 * cx - x1:g} {y1:g}H{x1:g}Z"
+
+
+KEYHOLE = keyhole()
+
+
+def mark(way: str, rounded: bool = True) -> str:
+    """The mark in the 64×64 space: the frame with the keyhole cut out."""
+    frame = ROUNDED if rounded else SQUARE
+    return f'<path fill-rule="evenodd" fill="{WAYS[way]}" d="{frame}{KEYHOLE}"/>'
 
 
 def icon(way: str, rounded: bool = True) -> str:
-    """The mark, 64×64. Unrounded for avatars and touch icons, which the
-    platform crops itself."""
-    bg, key = WAYS[way]
-    rx = ' rx="14"' if rounded else ""
+    """The mark alone, 64×64. Unrounded for avatars and touch icons, which
+    the platform crops itself."""
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-        f'<rect width="64" height="64"{rx} fill="{bg}"/>{KEYHOLE.format(k=key)}</svg>\n'
+        f"{mark(way, rounded)}</svg>\n"
     )
 
 
@@ -106,21 +136,21 @@ def svg(width: float, height: float, body: str) -> str:
 
 
 def logo(way: str, ink: str, d: str, width: float, ascent: float, descent: float) -> str:
-    """The mark beside the wordmark, centred on the text box."""
+    """The mark beside the wordmark, centred on the text box; `ink` is the
+    wordmark's colour."""
     box = ascent + descent
     size = box * 0.86
     gap = box * 0.2
     pad = 40
-    bg, key = WAYS[way]
-    mark = (
+    symbol = (
         f'  <g transform="translate({pad} {pad + (box - size) / 2:.0f}) scale({size / 64:.4f})">'
-        f'<rect width="64" height="64" rx="14" fill="{bg}"/>{KEYHOLE.format(k=key)}</g>\n'
+        f"{mark(way)}</g>\n"
     )
     text = (
         f'  <path transform="translate({pad + size + gap:.0f} {pad + ascent:.0f})" '
         f'fill="{ink}" d="{d}"/>\n'
     )
-    return svg(size + gap + width + 2 * pad, box + 2 * pad, mark + text)
+    return svg(size + gap + width + 2 * pad, box + 2 * pad, symbol + text)
 
 
 def font_faces() -> str:
@@ -198,7 +228,12 @@ def main() -> None:
 
     d, width, ascent, descent = wordmark_path("passforme")
     pad = 40
-    for name, ink in (("wordmark-on-light", INK), ("wordmark-on-dark", INK_DARK)):
+    for name, ink in (
+        ("wordmark-on-light", INK),
+        ("wordmark-on-dark", INK_DARK),
+        ("wordmark-gold", GOLD),
+        ("wordmark-brass", BRASS),
+    ):
         body = f'  <path transform="translate({pad} {pad + ascent:.0f})" fill="{ink}" d="{d}"/>\n'
         (BRAND / "logo" / f"{name}.svg").write_text(svg(width + 2 * pad, ascent + descent + 2 * pad, body))
 
@@ -208,11 +243,16 @@ def main() -> None:
             (BRAND / "logo" / f"icon-{way}.svg").write_text(icon(way))
             square = tmp / f"square-{way}.svg"
             square.write_text(icon(way, rounded=False))
-            for side, ink in (("light", INK), ("dark", INK_DARK)):
-                path = BRAND / "logo" / f"logo-{way}-on-{side}.svg"
+            # Wordmark in ink on light, in fog on dark, or in the mark's own colour.
+            for name, ink in (
+                (f"logo-{way}-on-light", INK),
+                (f"logo-{way}-on-dark", INK_DARK),
+                (f"logo-{way}", WAYS[way]),
+            ):
+                path = BRAND / "logo" / f"{name}.svg"
                 path.write_text(logo(way, ink, d, width, ascent, descent))
                 vw, vh = (float(v) for v in path.read_text().split('viewBox="0 0 ')[1].split('"')[0].split())
-                png_of_svg(path, BRAND / "logo" / f"logo-{way}-on-{side}.png", 1600, round(1600 * vh / vw), tmp)
+                png_of_svg(path, BRAND / "logo" / f"{name}.png", 1600, round(1600 * vh / vw), tmp)
 
             fav = BRAND / "favicon" / way
             fav.mkdir(exist_ok=True)
