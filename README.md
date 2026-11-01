@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="site/brand/logo/logo-gold-on-dark.svg">
+    <img src="site/brand/logo/logo-brass-on-light.svg" alt="passforme" width="440">
+  </picture>
+</p>
+
 # passforme website
 
 The site of [passforme](https://github.com/passforme/passforme), a

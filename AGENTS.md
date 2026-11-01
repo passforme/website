@@ -105,7 +105,9 @@ keyhole cut out (`-cutout`, one even-odd path, no mask: a hole the
 background shows through), black (`-black`, ink) and white (`-white`,
 sheet). The logo and the wordmark come for light and dark backgrounds
 and in one colour. `brand.html` shows all of it and offers
-it for download, with the zip of the whole kit. The fonts ship unmodified
+it for download, with the zip of the whole kit. The main repository's
+README shows two of the logos from its own copy, `docs/brand/`: when
+the kit changes, copy them there again. The fonts ship unmodified
 (woff2) with their OFL texts.
 
 ## Fonts
