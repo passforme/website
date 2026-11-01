@@ -59,6 +59,9 @@ site/                 published as is: the web root
                       JetBrains Mono (code); SIL OFL, licences beside them
 tools/check.py        the rules below, as a test (standard library only)
 tools/brand.py        generates the brand kit and the site's icons
+  _headers            response headers for Cloudflare Pages: the CSP and the rest
+bin/deploy            publishes site/ to Cloudflare Pages from the laptop (below)
+config/               deploy.env.example, versioned; deploy.env, ignored, the real values
 README.md             for visitors of the repository: what the site is, preview, how to contribute
 SECURITY.md           how to report a weakness in the site (passforme itself: the main repository)
 .github/              CI (check.py on every push), the GitHub Pages mirror, Dependabot for the actions
@@ -119,11 +122,23 @@ Bricolage with its weight, width and optical-size axes (titles use
 
 ## Deployment
 
-Not published yet. Planned: Cloudflare Pages on `passforme.com` and
-`www`, in the project's own Cloudflare account, building nothing and
-publishing `site/`, with a `_headers` file for the CSP and the other
-security headers, and a `bin/deploy` that publishes it from the laptop.
-A mirror at https://passforme.github.io/website/ is published by
+Cloudflare Pages, in the project's own Cloudflare account, serving
+`site/` as is on `passforme.com` and `www`; the redirect from `www` to
+the apex is a Redirect Rule of the zone, not a `_redirects` file (Pages
+does not redirect by host). Nothing is built. `site/_headers` carries the
+Content-Security-Policy (`default-src 'self'`, which the rules above make
+possible) and the other security headers; change the site's rules and
+the CSP together. Pages serves `guide.html` also as `/guide` and
+redirects the `.html` form to it; links inside the site keep the file
+name, which `tools/check.py` can verify exists.
+
+`bin/deploy` publishes from the laptop: it runs `tools/check.py`, then
+uploads `site/` with `wrangler pages deploy` (direct upload, no Git
+integration). It reads `config/deploy.env`, ignored by Git, whose
+versioned twin `config/deploy.env.example` documents the variables; the
+API token is never written to a file but produced by a command, such as
+`passforme get <item> --stdout`. A mirror at
+https://passforme.github.io/website/ is published by
 `.github/workflows/pages.yml` on every push to `main`, for the days the
 main host is down; it cannot send headers, so it is not the site.
 

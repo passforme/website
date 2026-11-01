@@ -23,8 +23,8 @@ write about it:
   free to use when talking about the project, with a zip of the whole
   kit.
 
-> **Status:** not online yet. `passforme.com` will serve `site/` as is,
-> with nothing built. For now, preview it locally (below).
+> The site is at [passforme.com](https://passforme.com): `site/` served
+> as is, with nothing built.
 
 The site is plain HTML, CSS and JavaScript: no build step, no framework,
 nothing loaded from another domain, not even fonts. The site of a
@@ -34,7 +34,7 @@ it that way.
 
 ## Preview
 
-Needs only Python 3.
+To see a change before it is published. Needs only Python 3.
 
 ```sh
 git clone https://github.com/passforme/website.git
