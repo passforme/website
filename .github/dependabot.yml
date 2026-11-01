@@ -1,0 +1,7 @@
+# Weekly pull requests for GitHub Actions updates; CI decides whether they pass.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
