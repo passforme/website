@@ -61,7 +61,7 @@ tools/check.py        the rules below, as a test (standard library only)
 tools/brand.py        generates the brand kit and the site's icons
 README.md             for visitors of the repository: what the site is, preview, how to contribute
 SECURITY.md           how to report a weakness in the site (passforme itself: the main repository)
-.github/              CI (check.py on every push) and Dependabot for the actions
+.github/              CI (check.py on every push), the GitHub Pages mirror, Dependabot for the actions
 ```
 
 Preview: `python3 -m http.server 8765 --bind 127.0.0.1 --directory site`.
@@ -117,6 +117,9 @@ Not published yet. Planned: Cloudflare Pages on `passforme.com` and
 `www`, in the project's own Cloudflare account, building nothing and
 publishing `site/`, with a `_headers` file for the CSP and the other
 security headers, and a `bin/deploy` that publishes it from the laptop.
+A mirror at https://passforme.github.io/website/ is published by
+`.github/workflows/pages.yml` on every push to `main`, for the days the
+main host is down; it cannot send headers, so it is not the site.
 
 **No releases, no `CHANGELOG.md`**: the site has no versions, what is
 on `main` is what is published. A change to the CLI is recorded in the
