@@ -8,8 +8,8 @@ Standard library only. Fails (exit 1) on:
 - scripts, stylesheets, images or fonts from another domain;
 - links to other sites without target="_blank" and rel="noopener";
 - local links or files that do not exist, and #fragments with no such id;
-- a page whose Portuguese and English twins (data-lang="pt"/"en") do not
-  pair up, an English twin not hidden, a page without data-title-pt/-en,
+- a page whose language twins (data-lang="pt"/"en") do not pair up, an
+  English twin not hidden, a page without data-title-pt/-en,
   or an image with alt text but no data-alt-pt/-en.
 """
 

@@ -1,23 +1,31 @@
 # passforme website
 
 The website of passforme at `passforme.com`: the home page, the command
-guide and the brand kit, static, in Portuguese and English. Split on
-2026-11-01 from the main repository,
-[passforme/passforme](https://github.com/passforme/passforme), which holds
-the code (Rust: the CLI, the vault format, the sync server) and its own
-`AGENTS.md`. The guide began as a private page for the owner and became
-the project's documentation, with the owner's own setup replaced by
-generic examples.
+guide and the brand kit, static, multilingual. The code (Rust: the CLI,
+the vault format, the sync server) is in the main repository,
+[passforme/passforme](https://github.com/passforme/passforme), with its
+own `AGENTS.md`. The guide is the project's user documentation: every
+command and option, with examples.
 
 **What is true only of one person's machines and accounts** (Cloudflare
 account and token, local copies) goes in `AGENTS.local.md`, ignored by
 Git, and never into a tracked file. Read it when it exists.
 
+## Read first
+
+- [`site/guide.html`](site/guide.html): **how to use passforme**, every
+  command and option with examples, the text an agent needs to operate
+  the CLI or to explain it. Read it before changing it.
+- The main repository's `docs/design.md`, `docs/threat-model.md` and
+  `docs/cryptography.md`: how passforme works and why. The guide says
+  what the CLI does; those say why it does it that way.
+
 ## Rules for working here
 
 - **Everything in this repository is English** except the site's
   Portuguese texts: code, comments, docs, commit messages. The
-  conversation with the owner is Portuguese.
+  maintainer talks to agents in Portuguese; none of that reaches the
+  repository.
 - **Commits** follow Conventional Commits (`feat(site):`, `fix(site):`,
   `docs:`, `ci:`, `chore:`), are signed, and carry **no AI attribution**:
   no `Co-Authored-By`, no "Generated with", no session links.
@@ -51,6 +59,9 @@ site/                 published as is: the web root
                       JetBrains Mono (code); SIL OFL, licences beside them
 tools/check.py        the rules below, as a test (standard library only)
 tools/brand.py        generates the brand kit and the site's icons
+README.md             for visitors of the repository: what the site is, preview, how to contribute
+SECURITY.md           how to report a weakness in the site (passforme itself: the main repository)
+.github/              CI (check.py on every push) and Dependabot for the actions
 ```
 
 Preview: `python3 -m http.server 8765 --bind 127.0.0.1 --directory site`.
@@ -65,12 +76,12 @@ All but the last two are enforced by `tools/check.py`.
   visitor's address to Google, wrong for a password manager's site).
 - **No inline scripts or styles**, so the site can be served with a strict
   Content-Security-Policy (`default-src 'self'`).
-- **Every text exists in both languages**: an element with
+- **Every text exists in every language of the site**: an element with
   `data-lang="pt"` next to its twin with `data-lang="en" hidden`. Page
   titles come from `data-title-pt` / `data-title-en` on `<html>`, image
   alt texts from `data-alt-pt` / `data-alt-en`, the guide's search
-  placeholder from `guide.js`. Only names stay the same in both
-  (passforme, GitHub, file names, font names).
+  placeholder from `guide.js`. Only names stay the same across
+  languages (passforme, GitHub, file names, font names).
 - **Links to other sites open in a new tab** (`target="_blank" rel="noopener"`):
   GitHub, the font foundries. Links inside the site stay in the same tab.
 - **Examples are generic**: `pfm.example.com`, `you@example.com`. Nothing
@@ -105,4 +116,8 @@ Bricolage with its weight, width and optical-size axes (titles use
 Not published yet. Planned: Cloudflare Pages on `passforme.com` and
 `www`, in the project's own Cloudflare account, building nothing and
 publishing `site/`, with a `_headers` file for the CSP and the other
-security headers.
+security headers, and a `bin/deploy` that publishes it from the laptop.
+
+**No releases, no `CHANGELOG.md`**: the site has no versions, what is
+on `main` is what is published. A change to the CLI is recorded in the
+main repository's `CHANGELOG.md`, and the guide follows it.
