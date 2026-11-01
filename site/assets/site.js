@@ -36,6 +36,6 @@
   });
   var saved = null;
   try { saved = localStorage.getItem("pfm-lang"); } catch (e) {}
-  var browser = (navigator.language || "pt").toLowerCase().indexOf("pt") === 0 ? "pt" : "en";
+  var browser = (navigator.language || "en").toLowerCase().indexOf("pt") === 0 ? "pt" : "en";
   setLang(saved === "pt" || saved === "en" ? saved : browser);
 })();
