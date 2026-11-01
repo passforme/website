@@ -6,7 +6,7 @@
   <br>
   <strong>passforme.com: the home page, the command guide and the brand kit.</strong>
   <br>
-  <sub>Static &middot; English and Portuguese &middot; no build step</sub>
+  <sub>Static &middot; multilingual &middot; no build step</sub>
 </p>
 
 The site of [passforme](https://github.com/passforme/passforme), a
