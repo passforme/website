@@ -3,9 +3,11 @@
     <source media="(prefers-color-scheme: dark)" srcset="site/brand/logo/logo-gold-on-dark.svg">
     <img src="site/brand/logo/logo-brass-on-light.svg" alt="passforme" width="440">
   </picture>
+  <br>
+  <strong>passforme.com: the home page, the command guide and the brand kit.</strong>
+  <br>
+  <sub>Static &middot; English and Portuguese &middot; no build step</sub>
 </p>
-
-# passforme website
 
 The site of [passforme](https://github.com/passforme/passforme), a
 password vault only you can open, kept in sync by a server you run
