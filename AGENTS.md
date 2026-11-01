@@ -47,6 +47,9 @@ site/                 published as is: the web root
   index.html          home
   guide.html          command guide (every command, with examples)
   brand.html          brand kit: logo, mark, colours, fonts, icons, social images
+  404.html            not found, noindex (Pages serves it with status 404)
+  robots.txt          allows everything, points at the sitemap
+  sitemap.xml         the three pages, by canonical URL
   favicon.ico         gold mark, 16/32/48 px
   brand/              the kit's files and its .zip, generated (below)
   assets/site.css     shared: fonts, colours (light and dark), top bar, buttons
@@ -88,6 +91,12 @@ All but the last two are enforced by `tools/check.py`.
   alt texts from `data-alt-pt` / `data-alt-en`, the guide's search
   placeholder from `guide.js`. Only names stay the same across
   languages (passforme, GitHub, file names, font names).
+- **Every page names its canonical URL**, `https://passforme.com/` plus
+  the file name without `.html`, the form Cloudflare Pages serves it at;
+  the mirrors (`passforme.pages.dev`, GitHub Pages) carry the same tag
+  and so defer to the site. `404.html` is `noindex` and, by existing,
+  makes Pages answer 404 instead of serving the home for every unknown
+  path. `sitemap.xml` lists every page and `robots.txt` points at it.
 - **Links to other sites open in a new tab** (`target="_blank" rel="noopener"`):
   GitHub, the font foundries. Links inside the site stay in the same tab.
 - **Examples are generic**: `pfm.example.com`, `you@example.com`. Nothing

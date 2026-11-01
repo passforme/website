@@ -10,7 +10,11 @@ Standard library only. Fails (exit 1) on:
 - local links or files that do not exist, and #fragments with no such id;
 - a page whose language twins (data-lang="pt"/"en") do not pair up, an
   English twin not hidden, a page without data-title-pt/-en,
-  or an image with alt text but no data-alt-pt/-en.
+  or an image with alt text but no data-alt-pt/-en;
+- a page without its canonical URL (https://passforme.com/ plus the file
+  name without .html, as Cloudflare Pages serves it), a 404.html that is
+  missing or not noindex, a missing robots.txt, or a sitemap.xml that
+  does not list every page.
 """
 
 import html.parser
@@ -19,6 +23,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 SITE = Path(__file__).resolve().parent.parent / "site"
+ORIGIN = "https://passforme.com/"
 
 
 class Page(html.parser.HTMLParser):
@@ -32,6 +37,8 @@ class Page(html.parser.HTMLParser):
         self.in_script = False
         self.script_text = ""
         self.html_attrs = {}
+        self.canonical = []
+        self.robots = None
 
     def error(self, msg):
         self.errors.append(f"{self.path.name}:{self.getpos()[0]}: {msg}")
@@ -40,6 +47,10 @@ class Page(html.parser.HTMLParser):
         a = dict(attrs)
         if tag == "html":
             self.html_attrs = a
+        if tag == "link" and a.get("rel") == "canonical":
+            self.canonical.append(a.get("href", ""))
+        if tag == "meta" and a.get("name") == "robots":
+            self.robots = a.get("content", "")
         if "id" in a:
             self.ids.add(a["id"])
         if tag == "style":
@@ -85,12 +96,35 @@ def check():
             )
         if not ("data-title-pt" in page.html_attrs and "data-title-en" in page.html_attrs):
             errors.append(f"{name}: <html> without data-title-pt/-en")
+        if name == "404.html":
+            if "noindex" not in (page.robots or ""):
+                errors.append(f'{name}: needs <meta name="robots" content="noindex">')
+        else:
+            canonical = ORIGIN + ("" if name == "index.html" else path.stem)
+            if page.canonical != [canonical]:
+                errors.append(f'{name}: needs exactly one <link rel="canonical" href="{canonical}">')
+
+    if "404.html" not in pages:
+        errors.append("404.html is missing (without it, Cloudflare Pages serves the home for every unknown path)")
+    if not (SITE / "robots.txt").exists():
+        errors.append("robots.txt is missing")
+    sitemap = SITE / "sitemap.xml"
+    if not sitemap.exists():
+        errors.append("sitemap.xml is missing")
+    else:
+        listed = sitemap.read_text(encoding="utf-8")
+        for name, page in parsed.items():
+            for url in page.canonical:
+                if f"<loc>{url}</loc>" not in listed:
+                    errors.append(f"sitemap.xml does not list {url}")
 
     for name, page in parsed.items():
         for tag, attr, value, attrs in page.refs:
             url = urlsplit(value)
             where = f"{name}: <{tag} {attr}={value!r}>"
             if url.scheme in ("http", "https"):
+                if tag == "link" and attrs.get("rel") == "canonical":
+                    continue  # names the page, loads nothing
                 if tag != "a":
                     errors.append(f"{where} loads from another domain")
                 elif attrs.get("target") != "_blank" or "noopener" not in attrs.get("rel", ""):
