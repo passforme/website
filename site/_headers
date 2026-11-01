@@ -1,0 +1,15 @@
+# Response headers for Cloudflare Pages. The site loads nothing from another
+# origin and has no inline scripts or styles (tools/check.py enforces it), so
+# the Content-Security-Policy can be the strictest one.
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+/assets/*
+  Cache-Control: public, max-age=86400
+/brand/*
+  Cache-Control: public, max-age=86400
