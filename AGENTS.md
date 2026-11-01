@@ -98,11 +98,12 @@ All but the last two are enforced by `tools/check.py`.
 and the mark are defined once there (the colours match the tokens in
 `assets/site.css`), the wordmark is the site's Bricolage Grotesque turned
 into outlines, and headless Chromium renders the PNGs, so changing a
-colour is one edit and one run. The keyhole is cut out of the square
-(one even-odd path, no mask), so the background shows through it. Two
-colourways: **gold** `#e0ac5c` (the main one, used by the site) and
-**brass** `#8a5a12`; the logo and the wordmark come for light and dark
-backgrounds and in one colour. `brand.html` shows all of it and offers
+colour is one edit and one run. Two colourways: **gold** `#e0ac5c`
+(the main one, used by the site) with a brass keyhole, and **brass**
+`#8a5a12` with a gold one; the mark also comes cut out (`-cutout`, one
+even-odd path, no mask), the keyhole a hole the background shows
+through. The logo and the wordmark come for light and dark backgrounds
+and in one colour. `brand.html` shows all of it and offers
 it for download, with the zip of the whole kit. The fonts ship unmodified
 (woff2) with their OFL texts.
 

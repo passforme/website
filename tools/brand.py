@@ -1,9 +1,10 @@
 """Builds the brand kit in brand/ and the site's icons, from one place.
 
-Two colourways of the mark (a keyhole cut out of a rounded square, so
-the background shows through it): gold, the brand's main one, and brass,
-the darker brown. The logo and the wordmark come for light and dark
-backgrounds and in one colour (gold, brass). Everything is generated:
+Two colourways of the mark (a keyhole on a rounded square): gold with a
+brass keyhole, the brand's main one, and brass with a gold keyhole. The
+mark also comes cut out, the keyhole a hole the background shows
+through. The logo and the wordmark come for light and dark backgrounds
+and in one colour (gold, brass). Everything is generated:
 SVGs here, PNGs and favicon.ico by headless Chromium, so a change to the
 palette or the mark is one edit and one run.
 
@@ -61,14 +62,15 @@ Fonts (SIL Open Font License)
   JetBrains Mono       code
 
 logo/      the logo, the mark and the wordmark: for light and dark backgrounds,
-           and in one colour (gold, brass); the keyhole is cut out, never filled
+           and in one colour (gold, brass); the mark also cut out (-cutout), the
+           keyhole a hole the background shows through
 favicon/   favicon.ico, apple-touch-icon, 192 and 512 px icons, per colourway
 fonts/     the three fonts as the site serves them (variable woff2) and their licences
 social/    avatar and banners (Open Graph, GitHub, X, LinkedIn, YouTube)
 """
 
-# Colourway: the square's colour. The keyhole has none, it is a hole.
-WAYS = {"gold": GOLD, "brass": BRASS}
+# Colourway: the square's colour, the keyhole's colour (each the other's).
+WAYS = {"gold": (GOLD, BRASS), "brass": (BRASS, GOLD)}
 
 # The 64×64 frame of the mark: a rounded square, or a plain one for the
 # platforms that crop the icon themselves.
@@ -79,9 +81,9 @@ SQUARE = "M0 0H64V64H0Z"
 def keyhole() -> str:
     """The keyhole as one outline, centred in the frame: a circle (centre
     32,26, radius 9) merged with the neck below it (9 wide at the top, 15
-    at the bottom, down to y=48). One subpath, so that it can be cut out
-    of the frame with a single even-odd path, which every SVG reader
-    understands (masks and clip paths are not that lucky)."""
+    at the bottom, down to y=48). One subpath, so that the cut-out mark
+    is a single even-odd path, which every SVG reader understands (masks
+    and clip paths are not that lucky)."""
     cx, cy, r = 32.0, 26.0, 9.0
     (x0, y0), (x1, y1) = (27.5, 30.0), (24.5, 48.0)  # the neck's left side
     dx, dy = x1 - x0, y1 - y0
@@ -95,18 +97,22 @@ def keyhole() -> str:
 KEYHOLE = keyhole()
 
 
-def mark(way: str, rounded: bool = True) -> str:
-    """The mark in the 64×64 space: the frame with the keyhole cut out."""
+def mark(way: str, rounded: bool = True, cutout: bool = False) -> str:
+    """The mark in the 64×64 space: the frame with the keyhole on it, or,
+    cut out, with the keyhole a hole."""
+    bg, key = WAYS[way]
     frame = ROUNDED if rounded else SQUARE
-    return f'<path fill-rule="evenodd" fill="{WAYS[way]}" d="{frame}{KEYHOLE}"/>'
+    if cutout:
+        return f'<path fill-rule="evenodd" fill="{bg}" d="{frame}{KEYHOLE}"/>'
+    return f'<path fill="{bg}" d="{frame}"/><path fill="{key}" d="{KEYHOLE}"/>'
 
 
-def icon(way: str, rounded: bool = True) -> str:
+def icon(way: str, rounded: bool = True, cutout: bool = False) -> str:
     """The mark alone, 64×64. Unrounded for avatars and touch icons, which
     the platform crops itself."""
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-        f"{mark(way, rounded)}</svg>\n"
+        f"{mark(way, rounded, cutout)}</svg>\n"
     )
 
 
@@ -241,13 +247,16 @@ def main() -> None:
         tmp = Path(t)
         for way in WAYS:
             (BRAND / "logo" / f"icon-{way}.svg").write_text(icon(way))
+            cut = BRAND / "logo" / f"icon-{way}-cutout.svg"
+            cut.write_text(icon(way, cutout=True))
+            png_of_svg(cut, BRAND / "logo" / f"icon-{way}-cutout.png", 512, 512, tmp)
             square = tmp / f"square-{way}.svg"
             square.write_text(icon(way, rounded=False))
             # Wordmark in ink on light, in fog on dark, or in the mark's own colour.
             for name, ink in (
                 (f"logo-{way}-on-light", INK),
                 (f"logo-{way}-on-dark", INK_DARK),
-                (f"logo-{way}", WAYS[way]),
+                (f"logo-{way}", WAYS[way][0]),
             ):
                 path = BRAND / "logo" / f"{name}.svg"
                 path.write_text(logo(way, ink, d, width, ascent, descent))
