@@ -52,4 +52,6 @@ td:first-child { white-space: nowrap; }
   nav.index { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px; }
   nav.index a { border: 1px solid var(--rule); border-radius: 5px; padding: 3px 9px; font-size: 14px; }
   td:first-child { white-space: normal; }
+  /* Commands wrap instead of scrolling, so the whole line is readable before copying. */
+  .line .c { white-space: pre-wrap; overflow-wrap: anywhere; }
 }

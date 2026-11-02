@@ -70,4 +70,7 @@
 }
 @media (max-width: 600px) {
   .features, .threats { grid-template-columns: minmax(0, 1fr); }
+  /* A phone is too narrow for the terminal's lines: wrap them, as a terminal would. */
+  .terminal { font-size: 13px; }
+  .terminal pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 }

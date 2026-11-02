@@ -106,5 +106,6 @@ code { font: 14px var(--font-mono); background: var(--code-bg); padding: 1px 5px
 
 @media (max-width: 560px) {
   .topbar { gap: 10px 16px; }
-  .topbar nav { order: 3; width: 100%; }
+  .topbar nav:not(.langs) { order: 3; width: 100%; }
+  .topbar .langs { margin-left: auto; }
 }
