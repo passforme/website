@@ -82,11 +82,12 @@ code { font: 14px var(--font-mono); background: var(--code-bg); padding: 1px 5px
 .topbar nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--brass); }
 
 .langs { display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; flex: none; }
-.langs a {
+.topbar .langs a {
   font: 600 13px var(--font-body); letter-spacing: 0.06em; padding: 8px 12px;
-  background: var(--sheet); color: var(--muted); text-decoration: none;
+  border: 0; background: var(--sheet); color: var(--muted); text-decoration: none;
 }
-.langs a[aria-current="true"] { background: var(--brass); color: var(--sheet); }
+.topbar .langs a:hover { color: var(--ink); }
+.topbar .langs a[aria-current="true"] { background: var(--brass); color: var(--sheet); }
 
 .button {
   display: inline-flex; align-items: center; gap: 8px;

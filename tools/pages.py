@@ -1,21 +1,23 @@
 """Writes the site's pages, one per language, from the bilingual sources.
 
-    python3 tools/pages.py          # site/*.html, site/pt/*.html, site/sitemap.xml
+    python3 tools/pages.py          # site/*.html, site/pt-br/*.html, site/sitemap.xml
     python3 tools/pages.py --check  # exit 1 if any of them is stale (tools/check.py runs it)
 
 A source in src/ holds every language at once: an element with
 data-lang="pt" next to its twin with data-lang="en" (hidden, in the body),
 titles and meta tags included, and an image's alt text in data-alt-pt and
 data-alt-en. English pages are written to site/ and Portuguese ones to
-site/pt/, each keeping only its own language, with <html lang>, the
+site/pt-br/, each keeping only its own language, with <html lang>, the
 canonical URL, the hreflang alternates, the Open Graph locale and the
-language switch (the empty <nav class="langs">) filled in. In site/pt/,
+language switch (the empty <nav class="langs">) filled in. In site/pt-br/,
 links to shared files (assets, brand, favicon) get a ../ prefix while links
 between pages stay within the language. English ids and anchors written as
 name-en in a source, to be unique while both languages share a file, lose
-the suffix. Standard library only.
+the suffix. Local CSS and JS links carry ?v=<hash of the file>, so run
+this again after changing a stylesheet or a script. Standard library only.
 """
 
+import hashlib
 import html.parser
 import re
 import sys
@@ -27,7 +29,7 @@ SITE = ROOT / "site"
 ORIGIN = "https://passforme.com/"
 LANGS = {
     "en": {"dir": "", "html": "en", "locale": "en_US", "hreflang": "en", "label": "EN", "switch": "Language"},
-    "pt": {"dir": "pt/", "html": "pt-BR", "locale": "pt_BR", "hreflang": "pt-BR", "label": "PT", "switch": "Idioma"},
+    "pt": {"dir": "pt-br/", "html": "pt-BR", "locale": "pt_BR", "hreflang": "pt-BR", "label": "PT", "switch": "Idioma"},
 }
 DEFAULT = "en"  # x-default: what a visitor of no known language gets
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
@@ -121,7 +123,7 @@ def keep_language(text, keep):
 
 
 def shared_links(text):
-    """In site/pt/, links to files outside the language's directory get ../."""
+    """In site/pt-br/, links to files outside the language's directory get ../."""
     def fix(m):
         attr, value = m.group(1), m.group(2)
         path = re.split(r"[#?]", value, maxsplit=1)[0]
@@ -129,6 +131,17 @@ def shared_links(text):
             return m.group(0)
         return f'{attr}="../{value}"'
     return re.sub(r'\b(href|src)="([^"]*)"', fix, text)
+
+
+def versioned(text, page_dir):
+    """Local CSS and JS links get ?v=<hash of the file>, so a browser that
+    cached the old file (the headers allow a day) fetches the new one with
+    the page that needs it; run this script again after changing them."""
+    def fix(m):
+        attr, value = m.group(1), m.group(2)
+        digest = hashlib.sha1((SITE / page_dir / value).resolve().read_bytes()).hexdigest()[:8]
+        return f'{attr}="{value}?v={digest}"'
+    return re.sub(r'\b(href|src)="((?:\.\./)?assets/[^"?#]+\.(?:css|js))"', fix, text)
 
 
 def render(name, lang):
@@ -142,6 +155,7 @@ def render(name, lang):
         text = re.sub(r'href="#([^"]*)-en"', r'href="#\1"', text)
     else:
         text = shared_links(text)
+    text = versioned(text, info["dir"])
     rel = info["dir"] + name
     twins = {l: LANGS[l]["dir"] + name for l in LANGS}
     # The language switch: links to this page in every language.

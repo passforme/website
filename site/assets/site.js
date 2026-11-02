@@ -1,5 +1,5 @@
 // Each page exists once per language: English at the root, Portuguese
-// under pt/, written by tools/pages.py from the sources in src/. The switch
+// under pt-br/, written by tools/pages.py from the sources in src/. The switch
 // in the top bar links to the page's twin. A choice made there is
 // remembered; without one, the browser's language decides on the first
 // page (Portuguese when it starts with "pt", English otherwise).

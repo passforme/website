@@ -17,7 +17,7 @@ write about it:
 
 - **Home**: what passforme keeps, how it protects it and for whom.
 - **Command guide**: every command and option with a tried example, in
-  English and, under `/pt/`, in Portuguese. It is the project's user
+  English and, under `/pt-br/`, in Portuguese. It is the project's user
   documentation and follows the CLI release by release.
 - **Brand kit**: logo, mark, colours, fonts, icons and social images,
   free to use when talking about the project, with a zip of the whole
@@ -40,7 +40,7 @@ To see a change before it is published. Needs only Python 3.
 git clone https://github.com/passforme/website.git
 cd website
 python3 -m http.server 8765 --bind 127.0.0.1 --directory site
-# http://127.0.0.1:8765 (English), http://127.0.0.1:8765/pt/ (Portuguese)
+# http://127.0.0.1:8765 (English), http://127.0.0.1:8765/pt-br/ (Portuguese)
 ```
 
 Each page has a language switch at the top; the choice is remembered in

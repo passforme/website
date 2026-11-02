@@ -2,7 +2,7 @@
 
 The website of passforme at `passforme.com`: the home page, the command
 guide and the brand kit, static, one page per language (English at the
-root, Portuguese under `pt/`). The code (Rust: the CLI,
+root, Portuguese under `pt-br/`). The code (Rust: the CLI,
 the vault format, the sync server) is in the main repository,
 [passforme/passforme](https://github.com/passforme/passforme), with its
 own `AGENTS.md`. The guide is the project's user documentation: every
@@ -17,7 +17,7 @@ Git, and never into a tracked file. Read it when it exists.
 - [`src/guide.html`](src/guide.html): **how to use passforme**, every
   command and option with examples in both languages, the text an agent
   needs to operate the CLI or to explain it. Read it before changing it;
-  `site/guide.html` and `site/pt/guide.html` are written from it.
+  `site/guide.html` and `site/pt-br/guide.html` are written from it.
 - The main repository's `docs/design.md`, `docs/threat-model.md` and
   `docs/cryptography.md`: how passforme works and why. The guide says
   what the CLI does; those say why it does it that way.
@@ -35,8 +35,11 @@ Git, and never into a tracked file. Read it when it exists.
   `CONTRIBUTING.md` says.
 - **Pages are edited in `src/` and written to `site/`** by
   `python3 tools/pages.py`, one file per language, committed together
-  with the source; `site/*.html` and `site/pt/*.html` are never edited
-  by hand. `python3 tools/check.py` passes before every commit (it fails
+  with the source; `site/*.html` and `site/pt-br/*.html` are never edited
+  by hand. The same run after a change to a stylesheet or a script, since
+  the pages link them with `?v=<hash of the file>` (the headers let
+  browsers keep `assets/` for a day; the hash makes them fetch a changed
+  file with the page that needs it). `python3 tools/check.py` passes before every commit (it fails
   on a stale page); CI runs it on every push.
 - **The guide documents the CLI as it is.** When a command or option of
   `passforme` changes, the guide changes too, in a commit here that
@@ -58,7 +61,7 @@ site/                 published as is: the web root
   guide.html
   brand.html
   404.html            noindex; by existing, makes Pages answer 404 instead of the home
-  pt/                 the same four pages in Portuguese
+  pt-br/                 the same four pages in Portuguese
   sitemap.xml         every page in every language, by canonical URL (written too)
   robots.txt          allows everything, points at the sitemap
   favicon.ico         gold mark, 16/32/48 px
@@ -77,6 +80,7 @@ tools/pages.py        writes site/ from src/: one page per language, canonical, 
 tools/check.py        the rules below, as a test (standard library only)
 tools/brand.py        generates the brand kit and the site's icons
   _headers            response headers for Cloudflare Pages: the CSP and the rest
+  _redirects          /pt/ to /pt-br/ (the Portuguese pages' first address, briefly)
 bin/deploy            publishes site/ to Cloudflare Pages from the laptop (below)
 config/               deploy.env.example, versioned; deploy.env, ignored, the real values
 README.md             for visitors of the repository: what the site is, preview, how to contribute
@@ -87,7 +91,7 @@ SECURITY.md           how to report a weakness in the site (passforme itself: th
 
 Preview: `python3 tools/pages.py`, then
 `python3 -m http.server 8765 --bind 127.0.0.1 --directory site`
-(English at `/`, Portuguese at `/pt/`).
+(English at `/`, Portuguese at `/pt-br/`).
 
 ## The site's rules
 
@@ -110,11 +114,11 @@ All but the last two are enforced by `tools/check.py`.
   Each page gets its own URL per language, with `hreflang` alternates,
   so a search engine indexes both; the switch in the top bar links to
   the twin, `site.js` remembers the choice and, on a first visit, sends
-  a `pt-*` browser to `pt/`. Only names stay the same across languages
+  a `pt-*` browser to `pt-br/`. Only names stay the same across languages
   (passforme, GitHub, file names, font names).
 - **Every page names its canonical URL** and its alternates,
   `https://passforme.com/` plus the path without `.html`, the form
-  Cloudflare Pages serves it at (`/guide`, `/pt/guide`); the mirrors
+  Cloudflare Pages serves it at (`/guide`, `/pt-br/guide`); the mirrors
   (`passforme.pages.dev`, GitHub Pages) carry the same tags and so defer
   to the site. `404.html` is `noindex` and, by existing, makes Pages
   answer 404 instead of serving the home for every unknown path.
@@ -163,7 +167,7 @@ does not redirect by host). Nothing is built. `site/_headers` carries the
 Content-Security-Policy (`default-src 'self'`, which the rules above make
 possible) and the other security headers; change the site's rules and
 the CSP together. Pages serves `guide.html` as `/guide` (and
-`pt/guide.html` as `/pt/guide`), redirecting the `.html` form; links
+`pt-br/guide.html` as `/pt-br/guide`), redirecting the `.html` form; links
 inside the site keep the file name, which `tools/check.py` can verify
 exists.
 

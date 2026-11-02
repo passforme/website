@@ -32,8 +32,8 @@ agents alike. The short version:
   code, comments, docs, commit messages.
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
   (`feat(site):`, `fix(site):`, `docs:`, …), one change per commit.
-- Before every commit: `python3 tools/pages.py`, then
-  `python3 tools/check.py`. CI runs the check. It fails on inline
+- Before every commit, and after any change to `src/` or to a file in
+  `assets/`: `python3 tools/pages.py`, then `python3 tools/check.py`. CI runs the check. It fails on inline
   scripts or styles, resources from other domains, broken links and
   fragments, a text missing in one of the languages, or a page in
   `site/` older than its source.

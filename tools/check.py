@@ -111,28 +111,28 @@ def check():
     for rel in generator.stale():
         errors.append(f"site/{rel} is stale: run python3 tools/pages.py")
     parsed = {}
-    for path in sorted(SITE.glob("*.html")) + sorted(SITE.glob("pt/*.html")):
-        page = parse(path, SITE)
-        parsed[path.resolve()] = page
-        errors += page.errors
-        if page.lang["pt"] or page.lang["en"]:
-            errors.append(f"{page.rel}: data-lang left in a generated page")
-        name = path.name
-        lang = "pt" if page.rel.startswith("pt/") else "en"
-        if page.html_lang != generator.LANGS[lang]["html"]:
-            errors.append(f'{page.rel}: <html lang="{page.html_lang}"> for a {lang} page')
-        if name == "404.html":
-            if "noindex" not in (page.robots or ""):
-                errors.append(f'{page.rel}: needs <meta name="robots" content="noindex">')
-            continue
-        twins = {l: generator.LANGS[l]["dir"] + name for l in generator.LANGS}
-        canonical = generator.clean_url(page.rel)
-        if page.canonical != [canonical]:
-            errors.append(f'{page.rel}: needs exactly one <link rel="canonical" href="{canonical}">')
-        expected = {generator.LANGS[l]["hreflang"]: generator.clean_url(t) for l, t in twins.items()}
-        expected["x-default"] = generator.clean_url(twins[generator.DEFAULT])
-        if page.alternates != expected:
-            errors.append(f"{page.rel}: hreflang alternates should be {expected}")
+    for lang, info in generator.LANGS.items():
+        for path in sorted(SITE.glob(info["dir"] + "*.html")):
+          page = parse(path, SITE)
+          parsed[path.resolve()] = page
+          errors += page.errors
+          if page.lang["pt"] or page.lang["en"]:
+              errors.append(f"{page.rel}: data-lang left in a generated page")
+          name = path.name
+          if page.html_lang != generator.LANGS[lang]["html"]:
+              errors.append(f'{page.rel}: <html lang="{page.html_lang}"> for a {lang} page')
+          if name == "404.html":
+              if "noindex" not in (page.robots or ""):
+                  errors.append(f'{page.rel}: needs <meta name="robots" content="noindex">')
+              continue
+          twins = {l: generator.LANGS[l]["dir"] + name for l in generator.LANGS}
+          canonical = generator.clean_url(page.rel)
+          if page.canonical != [canonical]:
+              errors.append(f'{page.rel}: needs exactly one <link rel="canonical" href="{canonical}">')
+          expected = {generator.LANGS[l]["hreflang"]: generator.clean_url(t) for l, t in twins.items()}
+          expected["x-default"] = generator.clean_url(twins[generator.DEFAULT])
+          if page.alternates != expected:
+              errors.append(f"{page.rel}: hreflang alternates should be {expected}")
 
     for page in parsed.values():
         for tag, attr, value, attrs in page.refs:
