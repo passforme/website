@@ -113,8 +113,11 @@ All but the last two are enforced by `tools/check.py`.
   Portuguese ones are written `name-en` and lose the suffix in `site/`.
   Each page gets its own URL per language, with `hreflang` alternates,
   so a search engine indexes both; the switch in the top bar links to
-  the twin, `site.js` remembers the choice and, on a first visit, sends
-  a `pt-*` browser to `pt-br/`. Only names stay the same across languages
+  the twin and `site.js` remembers the choice. Without one, a `pt-*`
+  browser opening an English page is sent to `pt-br/`; a Portuguese
+  page never redirects by browser language, because crawlers run the
+  script as `en-US` and would record the English twin's canonical for
+  the Portuguese URL. Only names stay the same across languages
   (passforme, GitHub, file names, font names).
 - **Every page names its canonical URL** and its alternates,
   `https://passforme.com/` plus the path without `.html`, the form
