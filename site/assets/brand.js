@@ -5,7 +5,7 @@ document.querySelectorAll(".swatch[data-copy]").forEach(function (b) {
     var value = b.getAttribute("data-copy");
     navigator.clipboard.writeText(value).then(function () {
       b.classList.add("done");
-      code.textContent = window.pfmLang && window.pfmLang.current === "en" ? "copied" : "copiado";
+      code.textContent = document.documentElement.lang.indexOf("pt") === 0 ? "copiado" : "copied";
       setTimeout(function () { b.classList.remove("done"); code.textContent = value; }, 1400);
     });
   });

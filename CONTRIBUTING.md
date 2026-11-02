@@ -17,9 +17,11 @@ small changes, each one explained, each one checked.
   the main repository, and the guide follows it. Try a new example in a
   throwaway vault (`PASSFORME_DIR` pointing at a temporary directory)
   before writing it down.
-- **Every text exists in every language of the site**: an element with
-  `data-lang="pt"` next to its twin with `data-lang="en" hidden`. If you
-  can write only one of them, open the pull request anyway and say so.
+- **Pages are edited in `src/`**, where every text exists in every
+  language of the site: an element with `data-lang="pt"` next to its
+  twin with `data-lang="en"`. `python3 tools/pages.py` writes `site/`
+  from it, one file per language; commit both. If you can write only
+  one language, open the pull request anyway and say so.
 
 ## The rules of the repository
 
@@ -30,10 +32,11 @@ agents alike. The short version:
   code, comments, docs, commit messages.
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
   (`feat(site):`, `fix(site):`, `docs:`, …), one change per commit.
-- Before every commit: `python3 tools/check.py`. CI runs the same. It
-  fails on inline scripts or styles, resources from other domains,
-  broken links and fragments, and a text missing in one of the
-  languages.
+- Before every commit: `python3 tools/pages.py`, then
+  `python3 tools/check.py`. CI runs the check. It fails on inline
+  scripts or styles, resources from other domains, broken links and
+  fragments, a text missing in one of the languages, or a page in
+  `site/` older than its source.
 - The site loads nothing from another domain and has no inline scripts
   or styles, so it can be served with a strict Content-Security-Policy;
   a change that needs either is a change to discuss first.

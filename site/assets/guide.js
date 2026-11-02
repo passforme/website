@@ -1,15 +1,15 @@
-// The guide: copy buttons and search. Language comes from site.js.
+// The guide: copy buttons and search, in the page's language.
 (function () {
   var copyLabel = { pt: ["Copiar", "Copiado", "Selecionado"], en: ["Copy", "Copied", "Selected"] };
   var placeholder = { pt: "ex.: cvv, totp, gerar, sessão", en: "e.g. cvv, totp, generate, session" };
   var input = document.getElementById("q");
-  var current = "pt";
+  var lang = document.documentElement.lang.indexOf("pt") === 0 ? "pt" : "en";
+  input.placeholder = placeholder[lang];
 
   // Copy buttons: the command without the trailing comment.
   document.querySelectorAll(".line").forEach(function (line) {
     var button = line.querySelector("button");
     var span = line.querySelector(".c");
-    var lang = line.closest("[data-lang]").getAttribute("data-lang");
     button.addEventListener("click", function () {
       var text = span.cloneNode(true);
       text.querySelectorAll(".hash").forEach(function (h) { h.remove(); });
@@ -31,10 +31,10 @@
     });
   });
 
-  // Search: within the visible language, hide cards and rows that miss a term.
+  // Search: hide cards and rows that miss a term.
   function norm(s) { return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   function filter() {
-    var wrap = document.querySelector('.wrap[data-lang="' + current + '"]');
+    var wrap = document.querySelector(".wrap");
     var terms = norm(input.value).split(/\s+/).filter(Boolean);
     var anyShown = false;
     wrap.querySelectorAll("main section").forEach(function (section) {
@@ -61,10 +61,4 @@
     wrap.querySelector(".empty").hidden = anyShown;
   }
   input.addEventListener("input", filter);
-
-  window.pfmLang.on(function (lang) {
-    current = lang;
-    input.placeholder = placeholder[lang];
-    filter();
-  });
 })();

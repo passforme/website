@@ -17,8 +17,8 @@ write about it:
 
 - **Home**: what passforme keeps, how it protects it and for whom.
 - **Command guide**: every command and option with a tried example, in
-  every language of the site. It is the project's user documentation
-  and follows the CLI release by release.
+  English and, under `/pt/`, in Portuguese. It is the project's user
+  documentation and follows the CLI release by release.
 - **Brand kit**: logo, mark, colours, fonts, icons and social images,
   free to use when talking about the project, with a zip of the whole
   kit.
@@ -40,25 +40,27 @@ To see a change before it is published. Needs only Python 3.
 git clone https://github.com/passforme/website.git
 cd website
 python3 -m http.server 8765 --bind 127.0.0.1 --directory site
-# http://127.0.0.1:8765
+# http://127.0.0.1:8765 (English), http://127.0.0.1:8765/pt/ (Portuguese)
 ```
 
 Each page has a language switch at the top; the choice is remembered in
-the browser and nowhere else.
+the browser and nowhere else, and a first visit follows the browser's
+language.
 
 ## Contributing
 
-- **Every language.** Every text exists once per language of the site:
-  an element with `data-lang="pt"` next to its twin with
-  `data-lang="en" hidden`. If you can write only one of them, open the
-  pull request anyway and say so.
+- **Edit `src/`, not `site/`.** A page in `src/` holds every language
+  at once: an element with `data-lang="pt"` next to its twin with
+  `data-lang="en"`. `python3 tools/pages.py` writes `site/` from it, one
+  file per language, and both go in the same commit. If you can write
+  only one language, open the pull request anyway and say so.
 - **The guide documents the CLI as released.** A new example is tried
   first in a throwaway vault (`PASSFORME_DIR` pointing at a temporary
   directory) before it is written down.
 - **The check must pass.** `python3 tools/check.py` is what CI runs on
   every push: it fails on inline scripts or styles, resources from other
-  domains, broken links and fragments, and a text missing in one of the
-  languages.
+  domains, broken links and fragments, a text missing in one of the
+  languages, or a page in `site/` older than its source.
 - **The brand kit is generated.** `site/brand/`, the favicon, the icons
   and the social image come from `tools/brand.py`; change the palette or
   the mark there and run it, never the files. It needs fontTools, brotli

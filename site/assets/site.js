@@ -1,41 +1,21 @@
-// Language for every page: elements with data-lang="pt" or "en" show for
-// their language only, and an image's alt text comes from data-alt-pt or
-// data-alt-en. The choice is remembered; without one, the browser's
-// language decides (Portuguese when it starts with "pt"). Pages that need
-// to react (the guide's search) register with window.pfmLang.on(fn).
+// Each page exists once per language: English at the root, Portuguese
+// under pt/, written by tools/pages.py from the sources in src/. The switch
+// in the top bar links to the page's twin. A choice made there is
+// remembered; without one, the browser's language decides on the first
+// page (Portuguese when it starts with "pt", English otherwise).
 (function () {
-  var root = document.documentElement;
-  var listeners = [];
-  var current = "pt";
-
-  function setLang(lang) {
-    current = lang;
-    root.lang = lang === "pt" ? "pt-BR" : "en";
-    document.querySelectorAll("[data-lang]").forEach(function (el) {
-      el.hidden = el.getAttribute("data-lang") !== lang;
+  var here = document.documentElement.lang.slice(0, 2);
+  var twins = {};
+  document.querySelectorAll(".langs a[hreflang]").forEach(function (a) {
+    var lang = a.getAttribute("hreflang").slice(0, 2);
+    twins[lang] = a;
+    a.addEventListener("click", function () {
+      try { localStorage.setItem("pfm-lang", lang); } catch (e) {}
     });
-    document.querySelectorAll(".langs button").forEach(function (b) {
-      b.setAttribute("aria-pressed", String(b.getAttribute("data-set") === lang));
-    });
-    document.querySelectorAll("[data-alt-" + lang + "]").forEach(function (el) {
-      el.alt = el.getAttribute("data-alt-" + lang);
-    });
-    var title = root.getAttribute(lang === "pt" ? "data-title-pt" : "data-title-en");
-    if (title) document.title = title;
-    try { localStorage.setItem("pfm-lang", lang); } catch (e) {}
-    listeners.forEach(function (fn) { fn(lang); });
-  }
-
-  window.pfmLang = {
-    on: function (fn) { listeners.push(fn); fn(current); },
-    get current() { return current; }
-  };
-
-  document.querySelectorAll(".langs button").forEach(function (b) {
-    b.addEventListener("click", function () { setLang(b.getAttribute("data-set")); });
   });
   var saved = null;
   try { saved = localStorage.getItem("pfm-lang"); } catch (e) {}
-  var browser = (navigator.language || "en").toLowerCase().indexOf("pt") === 0 ? "pt" : "en";
-  setLang(saved === "pt" || saved === "en" ? saved : browser);
+  var want = saved === "pt" || saved === "en" ? saved
+    : (navigator.language || "en").toLowerCase().indexOf("pt") === 0 ? "pt" : "en";
+  if (want !== here && twins[want]) location.replace(twins[want].href + location.hash);
 })();

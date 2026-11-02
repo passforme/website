@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>passforme · um cofre de senhas que só você abre</title>
+<meta name="description" content="Um gerenciador de senhas zero-knowledge para o terminal, com o seu próprio servidor de sincronização.">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="passforme · um cofre de senhas que só você abre">
+<meta property="og:description" content="Um gerenciador de senhas zero-knowledge para o terminal, com o seu próprio servidor de sincronização.">
+<meta property="og:image" content="https://passforme.com/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/home.css">
+<script src="../assets/site.js" defer></script>
+<link rel="canonical" href="https://passforme.com/pt/">
+<link rel="alternate" hreflang="en" href="https://passforme.com/">
+<link rel="alternate" hreflang="pt-BR" href="https://passforme.com/pt/">
+<link rel="alternate" hreflang="x-default" href="https://passforme.com/">
+<meta property="og:url" content="https://passforme.com/pt/">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:locale:alternate" content="en_US">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">passforme<span class="alias">pfm</span></a>
+  <nav aria-label="Site">
+    <a href="index.html" aria-current="page"><span>Início</span></a>
+    <a href="guide.html"><span>Guia</span></a>
+    <a href="brand.html"><span>Marca</span></a>
+    <a href="https://github.com/passforme" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+  <nav class="langs" aria-label="Idioma"><a href="../index.html" hreflang="en" lang="en">EN</a><a href="index.html" hreflang="pt-BR" lang="pt-BR" aria-current="true">PT</a></nav>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <a class="status" href="https://github.com/passforme" target="_blank" rel="noopener">Código aberto · em desenvolvimento</a>
+      <h1>Um cofre de senhas que só você abre.</h1>
+      <p class="lede">O passforme guarda senhas, cartões, códigos de recuperação e chaves de API num cofre cifrado no seu aparelho. Ele sincroniza por um servidor seu, que nunca vê nada além de dados cifrados.</p>
+      <div class="actions">
+        <a class="button primary" href="guide.html"><span>Ler o guia</span></a>
+        <a class="button secondary" href="#how"><span>Como ele protege</span></a>
+      </div>
+    </div>
+    <div class="terminal" aria-label="Terminal">
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+<pre><span class="p">$</span> pfm add github.com --username you@example.com --generate
+<span class="o">Added 'github.com'.
+Generated password (173 bits) copied; cleared in 30 s.</span>
+<span class="p">$</span> pfm get github
+<span class="o">Copied the Password of 'github.com'; cleared in 30 s.</span>
+<span class="p">$</span> pfm totp github
+<span class="o">482913
+valid for 21 s</span>
+<span class="p">$</span> pfm generate --words 7 --lang pt-br
+<span class="o">fissura-socorro-distante-azulejo-safira-navalha-sujeito</span></pre>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>O que ele guarda e faz</h2>
+    <div class="features">
+      <article class="feature">
+        <h3>Zero-knowledge</h3>
+        <p>O cofre só se abre com a sua frase mestra e a sua Secret Key, e as duas nunca saem do seu aparelho.</p>
+      </article>
+      <article class="feature">
+        <h3>O seu servidor</h3>
+        <p>O <code>passforme-server</code> sincroniza seus aparelhos e guarda só o cofre cifrado. Mesmo roubado, não revela nada.</p>
+      </article>
+      <article class="feature">
+        <h3>Gerador de senhas</h3>
+        <p>29 letras e números por padrão, com símbolos quando o site exige, ou frases de palavras em português e inglês.</p>
+      </article>
+      <article class="feature">
+        <h3>Todo tipo de segredo</h3>
+        <p>Logins com 2FA, cartões, PINs, chaves de API e SSH, frases de carteira cripto, códigos de recuperação e documentos.</p>
+      </article>
+      <article class="feature">
+        <h3>Confere na hora</h3>
+        <p>Frase de cripto pelo checksum do BIP-39, cartão pelo dígito verificador: o erro aparece enquanto o papel está na mão.</p>
+      </article>
+      <article class="feature">
+        <h3>Feito para o terminal</h3>
+        <p>Comandos curtos, Tab que completa tudo e uma sessão que lembra a frase por 15 minutos. Programas leem só as chaves que você liberar.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <h2>Como ele protege</h2>
+    <p class="sub">Só construções padrão, de bibliotecas auditadas. Nenhuma criptografia caseira.</p>
+    <ol class="steps">
+      <li><div><strong>Duas peças, não uma</strong><span>A frase mestra passa pelo Argon2id (256 MiB de memória) e se junta à Secret Key de 128 bits pelo HKDF. Quem rouba os dados do servidor não consegue adivinhar a frase, porque falta a Secret Key.</span></div></li>
+      <li><div><strong>Cada item cifrado à parte</strong><span>XChaCha20-Poly1305, amarrado ao próprio id e à versão: um item trocado, copiado ou adulterado é recusado.</span></div></li>
+      <li><div><strong>O servidor só vê dados cifrados</strong><span>Ele guarda o cofre e as versões anteriores, e o cliente recusa uma cópia mais antiga que a última que já viu.</span></div></li>
+    </ol>
+
+    <div class="threats">
+      <div class="yes">
+        <h3>Protege contra</h3>
+        <ul>
+          <li>Roubo do servidor, do disco ou de um backup</li>
+          <li>Adivinhação da frase a partir dos dados do servidor</li>
+          <li>Um servidor que tente ler ou alterar os itens</li>
+          <li>Quem escuta a rede</li>
+        </ul>
+      </div>
+      <div class="no">
+        <h3>Não protege contra</h3>
+        <ul>
+          <li>Malware no seu aparelho enquanto o cofre está aberto</li>
+          <li>Perder a frase mestra e a Secret Key juntas: não há recuperação</li>
+          <li>Ainda não passou por auditoria externa</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block cta">
+    <h2>Todos os comandos, com exemplos</h2>
+    <p class="sub">Do primeiro <code>pfm init</code> à recuperação num notebook novo.</p>
+    <div class="actions">
+      <a class="button primary" href="guide.html"><span>Abrir o guia</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>passforme</span>
+  <span><span>Código aberto · em desenvolvimento ·</span> <a href="https://github.com/passforme" target="_blank" rel="noopener">github.com/passforme</a></span>
+</footer>
+</body>
+</html>

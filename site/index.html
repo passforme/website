@@ -1,54 +1,51 @@
 <!doctype html>
-<html lang="pt-BR" data-title-pt="passforme · um cofre de senhas que só você abre" data-title-en="passforme · a password vault only you can open">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>passforme · um cofre de senhas que só você abre</title>
-<meta name="description" content="Um gerenciador de senhas zero-knowledge para o terminal, com o seu próprio servidor de sincronização.">
-<link rel="canonical" href="https://passforme.com/">
+<title>passforme · a password vault only you can open</title>
+<meta name="description" content="A zero-knowledge password manager for the terminal, with your own sync server.">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://passforme.com/">
-<meta property="og:title" content="passforme · um cofre de senhas que só você abre">
-<meta property="og:description" content="Um gerenciador de senhas zero-knowledge para o terminal, com o seu próprio servidor de sincronização.">
+<meta property="og:title" content="passforme · a password vault only you can open">
+<meta property="og:description" content="A zero-knowledge password manager for the terminal, with your own sync server.">
 <meta property="og:image" content="https://passforme.com/assets/og.png">
-<meta property="og:locale" content="pt_BR">
-<meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/bricolage-grotesque-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="stylesheet" href="assets/home.css">
 <script src="assets/site.js" defer></script>
+<link rel="canonical" href="https://passforme.com/">
+<link rel="alternate" hreflang="en" href="https://passforme.com/">
+<link rel="alternate" hreflang="pt-BR" href="https://passforme.com/pt/">
+<link rel="alternate" hreflang="x-default" href="https://passforme.com/">
+<meta property="og:url" content="https://passforme.com/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">passforme<span class="alias">pfm</span></a>
   <nav aria-label="Site">
-    <a href="index.html" aria-current="page"><span data-lang="pt">Início</span><span data-lang="en" hidden>Home</span></a>
-    <a href="guide.html"><span data-lang="pt">Guia</span><span data-lang="en" hidden>Guide</span></a>
-    <a href="brand.html"><span data-lang="pt">Marca</span><span data-lang="en" hidden>Brand</span></a>
+    <a href="index.html" aria-current="page"><span>Home</span></a>
+    <a href="guide.html"><span>Guide</span></a>
+    <a href="brand.html"><span>Brand</span></a>
     <a href="https://github.com/passforme" target="_blank" rel="noopener">GitHub</a>
   </nav>
-  <div class="langs" role="group" aria-label="Idioma / Language">
-    <button type="button" data-set="pt" aria-pressed="true">PT</button>
-    <button type="button" data-set="en" aria-pressed="false">EN</button>
-  </div>
+  <nav class="langs" aria-label="Language"><a href="index.html" hreflang="en" lang="en" aria-current="true">EN</a><a href="pt/index.html" hreflang="pt-BR" lang="pt-BR">PT</a></nav>
 </header>
 
 <main class="page">
   <section class="hero">
     <div>
-      <a class="status" href="https://github.com/passforme" target="_blank" rel="noopener" data-lang="pt">Código aberto · em desenvolvimento</a>
-      <a class="status" href="https://github.com/passforme" target="_blank" rel="noopener" data-lang="en" hidden>Open source · in development</a>
-      <h1 data-lang="pt">Um cofre de senhas que só você abre.</h1>
-      <h1 data-lang="en" hidden>A password vault only you can open.</h1>
-      <p class="lede" data-lang="pt">O passforme guarda senhas, cartões, códigos de recuperação e chaves de API num cofre cifrado no seu aparelho. Ele sincroniza por um servidor seu, que nunca vê nada além de dados cifrados.</p>
-      <p class="lede" data-lang="en" hidden>passforme keeps passwords, cards, recovery codes and API keys in a vault encrypted on your device. It syncs through a server of your own, which never sees anything but encrypted data.</p>
+      <a class="status" href="https://github.com/passforme" target="_blank" rel="noopener">Open source · in development</a>
+      <h1>A password vault only you can open.</h1>
+      <p class="lede">passforme keeps passwords, cards, recovery codes and API keys in a vault encrypted on your device. It syncs through a server of your own, which never sees anything but encrypted data.</p>
       <div class="actions">
-        <a class="button primary" href="guide.html"><span data-lang="pt">Ler o guia</span><span data-lang="en" hidden>Read the guide</span></a>
-        <a class="button secondary" href="#how"><span data-lang="pt">Como ele protege</span><span data-lang="en" hidden>How it protects</span></a>
+        <a class="button primary" href="guide.html"><span>Read the guide</span></a>
+        <a class="button secondary" href="#how"><span>How it protects</span></a>
       </div>
     </div>
     <div class="terminal" aria-label="Terminal">
@@ -67,84 +64,45 @@ valid for 21 s</span>
   </section>
 
   <section class="block">
-    <h2 data-lang="pt">O que ele guarda e faz</h2>
-    <h2 data-lang="en" hidden>What it keeps and does</h2>
+    <h2>What it keeps and does</h2>
     <div class="features">
       <article class="feature">
-        <h3 data-lang="pt">Zero-knowledge</h3>
-        <h3 data-lang="en" hidden>Zero-knowledge</h3>
-        <p data-lang="pt">O cofre só se abre com a sua frase mestra e a sua Secret Key, e as duas nunca saem do seu aparelho.</p>
-        <p data-lang="en" hidden>The vault opens only with your master phrase and your Secret Key, and neither ever leaves your device.</p>
+        <h3>Zero-knowledge</h3>
+        <p>The vault opens only with your master phrase and your Secret Key, and neither ever leaves your device.</p>
       </article>
       <article class="feature">
-        <h3 data-lang="pt">O seu servidor</h3>
-        <h3 data-lang="en" hidden>Your own server</h3>
-        <p data-lang="pt">O <code>passforme-server</code> sincroniza seus aparelhos e guarda só o cofre cifrado. Mesmo roubado, não revela nada.</p>
-        <p data-lang="en" hidden><code>passforme-server</code> syncs your devices and keeps only the encrypted vault. Even stolen, it reveals nothing.</p>
+        <h3>Your own server</h3>
+        <p><code>passforme-server</code> syncs your devices and keeps only the encrypted vault. Even stolen, it reveals nothing.</p>
       </article>
       <article class="feature">
-        <h3 data-lang="pt">Gerador de senhas</h3>
-        <h3 data-lang="en" hidden>Password generator</h3>
-        <p data-lang="pt">29 letras e números por padrão, com símbolos quando o site exige, ou frases de palavras em português e inglês.</p>
-        <p data-lang="en" hidden>29 letters and digits by default, symbols when a site demands them, or phrases of words in English and Portuguese.</p>
+        <h3>Password generator</h3>
+        <p>29 letters and digits by default, symbols when a site demands them, or phrases of words in English and Portuguese.</p>
       </article>
       <article class="feature">
-        <h3 data-lang="pt">Todo tipo de segredo</h3>
-        <h3 data-lang="en" hidden>Every kind of secret</h3>
-        <p data-lang="pt">Logins com 2FA, cartões, PINs, chaves de API e SSH, frases de carteira cripto, códigos de recuperação e documentos.</p>
-        <p data-lang="en" hidden>Logins with 2FA, cards, PINs, API and SSH keys, crypto wallet phrases, recovery codes and documents.</p>
+        <h3>Every kind of secret</h3>
+        <p>Logins with 2FA, cards, PINs, API and SSH keys, crypto wallet phrases, recovery codes and documents.</p>
       </article>
       <article class="feature">
-        <h3 data-lang="pt">Confere na hora</h3>
-        <h3 data-lang="en" hidden>Checks as you type</h3>
-        <p data-lang="pt">Frase de cripto pelo checksum do BIP-39, cartão pelo dígito verificador: o erro aparece enquanto o papel está na mão.</p>
-        <p data-lang="en" hidden>Crypto phrases by their BIP-39 checksum, cards by their check digit: a mistake shows while the paper is still in your hand.</p>
+        <h3>Checks as you type</h3>
+        <p>Crypto phrases by their BIP-39 checksum, cards by their check digit: a mistake shows while the paper is still in your hand.</p>
       </article>
       <article class="feature">
-        <h3 data-lang="pt">Feito para o terminal</h3>
-        <h3 data-lang="en" hidden>Made for the terminal</h3>
-        <p data-lang="pt">Comandos curtos, Tab que completa tudo e uma sessão que lembra a frase por 15 minutos. Programas leem só as chaves que você liberar.</p>
-        <p data-lang="en" hidden>Short commands, Tab that completes everything and a session that remembers the phrase for 15 minutes. Programs read only the keys you release.</p>
+        <h3>Made for the terminal</h3>
+        <p>Short commands, Tab that completes everything and a session that remembers the phrase for 15 minutes. Programs read only the keys you release.</p>
       </article>
     </div>
   </section>
 
   <section class="block" id="how">
-    <h2 data-lang="pt">Como ele protege</h2>
-    <h2 data-lang="en" hidden>How it protects</h2>
-    <p class="sub" data-lang="pt">Só construções padrão, de bibliotecas auditadas. Nenhuma criptografia caseira.</p>
-    <p class="sub" data-lang="en" hidden>Only standard constructions, from audited libraries. No home-made cryptography.</p>
-    <ol class="steps" data-lang="pt">
-      <li><div><strong>Duas peças, não uma</strong><span>A frase mestra passa pelo Argon2id (256 MiB de memória) e se junta à Secret Key de 128 bits pelo HKDF. Quem rouba os dados do servidor não consegue adivinhar a frase, porque falta a Secret Key.</span></div></li>
-      <li><div><strong>Cada item cifrado à parte</strong><span>XChaCha20-Poly1305, amarrado ao próprio id e à versão: um item trocado, copiado ou adulterado é recusado.</span></div></li>
-      <li><div><strong>O servidor só vê dados cifrados</strong><span>Ele guarda o cofre e as versões anteriores, e o cliente recusa uma cópia mais antiga que a última que já viu.</span></div></li>
-    </ol>
-    <ol class="steps" data-lang="en" hidden>
+    <h2>How it protects</h2>
+    <p class="sub">Only standard constructions, from audited libraries. No home-made cryptography.</p>
+    <ol class="steps">
       <li><div><strong>Two pieces, not one</strong><span>The master phrase goes through Argon2id (256 MiB of memory) and is joined to the 128-bit Secret Key by HKDF. Whoever steals the server's data cannot guess the phrase, because the Secret Key is missing.</span></div></li>
       <li><div><strong>Every item encrypted on its own</strong><span>XChaCha20-Poly1305, bound to its own id and version: a swapped, copied or tampered item is refused.</span></div></li>
       <li><div><strong>The server only sees encrypted data</strong><span>It keeps the vault and its previous versions, and the client refuses a copy older than the latest one it has seen.</span></div></li>
     </ol>
 
-    <div class="threats" data-lang="pt">
-      <div class="yes">
-        <h3>Protege contra</h3>
-        <ul>
-          <li>Roubo do servidor, do disco ou de um backup</li>
-          <li>Adivinhação da frase a partir dos dados do servidor</li>
-          <li>Um servidor que tente ler ou alterar os itens</li>
-          <li>Quem escuta a rede</li>
-        </ul>
-      </div>
-      <div class="no">
-        <h3>Não protege contra</h3>
-        <ul>
-          <li>Malware no seu aparelho enquanto o cofre está aberto</li>
-          <li>Perder a frase mestra e a Secret Key juntas: não há recuperação</li>
-          <li>Ainda não passou por auditoria externa</li>
-        </ul>
-      </div>
-    </div>
-    <div class="threats" data-lang="en" hidden>
+    <div class="threats">
       <div class="yes">
         <h3>Protects against</h3>
         <ul>
@@ -166,19 +124,17 @@ valid for 21 s</span>
   </section>
 
   <section class="block cta">
-    <h2 data-lang="pt">Todos os comandos, com exemplos</h2>
-    <h2 data-lang="en" hidden>Every command, with examples</h2>
-    <p class="sub" data-lang="pt">Do primeiro <code>pfm init</code> à recuperação num notebook novo.</p>
-    <p class="sub" data-lang="en" hidden>From the first <code>pfm init</code> to recovering on a new laptop.</p>
+    <h2>Every command, with examples</h2>
+    <p class="sub">From the first <code>pfm init</code> to recovering on a new laptop.</p>
     <div class="actions">
-      <a class="button primary" href="guide.html"><span data-lang="pt">Abrir o guia</span><span data-lang="en" hidden>Open the guide</span></a>
+      <a class="button primary" href="guide.html"><span>Open the guide</span></a>
     </div>
   </section>
 </main>
 
 <footer class="footer">
   <span>passforme</span>
-  <span><span data-lang="pt">Código aberto · em desenvolvimento ·</span><span data-lang="en" hidden>Open source · in development ·</span> <a href="https://github.com/passforme" target="_blank" rel="noopener">github.com/passforme</a></span>
+  <span><span>Open source · in development ·</span> <a href="https://github.com/passforme" target="_blank" rel="noopener">github.com/passforme</a></span>
 </footer>
 </body>
 </html>
