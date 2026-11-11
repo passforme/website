@@ -149,10 +149,11 @@
         </article>
         <article class="cmd">
           <h3>pfm codes NAME <span class="what">recovery code</span></h3>
-          <p>Copies the next unused code and marks it used. Warns when two or fewer are left. With <code>--list</code>, shows them all and which were used (on screen, in plain text). To add the codes, see <a href="#codes">recovery codes</a>.</p>
+          <p>Copies the next unused code and marks it used. Warns when two or fewer are left. With <code>--list</code>, shows them all and which were used (on screen, in plain text). With <code>--stdout</code>, prints the code alone instead of copying it, for programs (see <a href="#writable-agent">Agent</a>). To add the codes, see <a href="#codes">recovery codes</a>.</p>
           <div class="ex">
             <div class="line"><span class="c">pfm codes openai  <span class="hash"># copies the next one and marks it used</span></span><button type="button">Copy</button></div>
             <div class="line"><span class="c">pfm codes openai --list  <span class="hash"># all of them, (used) on the used ones</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm codes openai --stdout  <span class="hash"># the code alone, not copied</span></span><button type="button">Copy</button></div>
           </div>
           <p class="note">A code cannot be unmarked: run <code>pfm codes</code> only when you are about to use one. Marking on copy errs on the safe side: at worst you are one code short, and a spent code never comes back to the list. To rebuild the list, paste the codes again with <code>pfm edit NAME --codes</code>.</p>
         </article>
@@ -466,7 +467,7 @@
 
     <section id="agent">
       <h2>Agent (programs)</h2>
-      <p class="sub">Programs (scripts, AI agents) don't use the session. They only read the items you mark, and nothing else in the vault.</p>
+      <p class="sub">Programs (scripts, AI agents) don't use the session. They only read the items you mark, and nothing else in the vault. If you allow it, they also keep the items they create themselves.</p>
       <div class="cards">
         <article class="cmd">
           <div class="tbl"><table>
@@ -486,6 +487,39 @@
             <div class="line"><span class="c">pfm lock  <span class="hash"># empties the agent now</span></span><button type="button">Copy</button></div>
           </div>
           <p class="note">With no agent released, <code>get --stdout</code> outside a terminal fails at once, instead of waiting for a phrase nobody will type.</p>
+        </article>
+        <article class="cmd" id="writable-agent">
+          <h3>pfm unlock --writable <span class="what">programs that keep what they create</span></h3>
+          <p>With <code>--writable</code>, a program can also store items in the vault, without the master phrase: an AI agent that creates test accounts in an application you authorized it to test keeps the password, the 2FA secret and the recovery codes there, and reads them back later. A program changes only the items programs created. Yours it still only reads, and only the ones marked <code>--agent</code>.</p>
+          <div class="tbl"><table>
+            <tr><th>Command</th><th>What it does</th></tr>
+            <tr><td><code>pfm unlock --writable</code></td><td>you, in a terminal: releases reading and writing for 8 hours (takes <code>--for</code> and item names, as always)</td></tr>
+            <tr><td><code>pfm add NAME --agent-space</code></td><td>the program creates an item; takes <code>--username</code>, <code>--url</code>, <code>--generate</code> and <code>--kind</code></td></tr>
+            <tr><td><code>pfm edit NAME --agent-space</code></td><td>the program changes an item programs created; the options of <code>edit</code>, except attachments and <code>--agent</code></td></tr>
+            <tr><td><code>pfm get NAME --stdout</code></td><td>reads a value; with <code>--field totp</code>, the current 2FA code</td></tr>
+            <tr><td><code>pfm codes NAME --stdout</code></td><td>prints the next recovery code and marks it used</td></tr>
+            <tr><td><code>pfm list --agent-space</code></td><td>what the agent holds, without secrets</td></tr>
+          </table></div>
+          <div class="ex">
+            <div class="line"><span class="c">pfm unlock --for 8h --writable  <span class="hash"># you, once, with the master phrase</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm add "acme test admin" --agent-space --username admin@example.com --url https://staging.example.com --generate  <span class="hash"># the program: an account with a generated password</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">echo "$PASSWORD" | pfm add "acme test user" --agent-space --username you@example.com  <span class="hash"># a password the program already has, on stdin</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm get "acme test admin" --stdout  <span class="hash"># reads the password back</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">echo "$TOTP_SECRET" | pfm edit "acme test user" --agent-space --totp  <span class="hash"># keeps the 2FA secret</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm get "acme test user" --field totp --stdout  <span class="hash"># the 2FA code right now</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">printf '%s\n' "$CODE_1" "$CODE_2" | pfm edit "acme test user" --agent-space --codes  <span class="hash"># keeps the codes, one per line</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm codes "acme test user" --stdout  <span class="hash"># uses one code</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm list --agent-space  <span class="hash"># what the agent holds</span></span><button type="button">Copy</button></div>
+            <div class="line"><span class="c">pfm status  <span class="hash"># shows whether the agent takes writes and how many changes wait</span></span><button type="button">Copy</button></div>
+          </div>
+          <p>Each secret comes in on a line of stdin, never as an argument. What the program writes stays encrypted on the laptop, and <strong>your next command</strong> in a terminal (any of them: <code>pfm list</code>, <code>pfm get</code>…) brings those items into the vault and syncs. In <code>pfm list</code> they show as <code>agent-made</code> in the AGENT column.</p>
+          <ul>
+            <li><strong>Your items stay out of reach</strong>: <code>edit --agent-space</code> and <code>codes --stdout</code> refuse an item you created, marked or not.</li>
+            <li><strong>An item of yours always wins a search</strong>: if a program creates an item called <code>router</code>, <code>pfm get router</code> still finds your <code>OpenRouter</code>.</li>
+            <li><strong>Deleting is yours</strong>: programs neither delete nor attach files. Use <code>pfm rm NAME</code>.</li>
+            <li><strong>Limits</strong>: up to 200 items created by programs, of up to 64 KiB each.</li>
+          </ul>
+          <p class="note">After a reboot or a <code>pfm lock</code>, what was written is not lost: it enters the vault with your next command. The program reads and writes again only after a new <code>pfm unlock --writable</code>. Treat what a program stored as coming from outside: it may have been written by the application it was testing.</p>
         </article>
       </div>
     </section>
