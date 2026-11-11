@@ -148,10 +148,11 @@
         </article>
         <article class="cmd">
           <h3>pfm codes NOME <span class="what">código de recuperação</span></h3>
-          <p>Copia o próximo código ainda não usado e o marca como usado. Avisa quando restam dois ou menos. Com <code>--list</code>, mostra todos e quais já foram usados (na tela, em texto puro). Para cadastrar os códigos, ver <a href="#codigos">códigos de recuperação</a>.</p>
+          <p>Copia o próximo código ainda não usado e o marca como usado. Avisa quando restam dois ou menos. Com <code>--list</code>, mostra todos e quais já foram usados (na tela, em texto puro). Com <code>--stdout</code>, imprime o código sozinho em vez de copiar, para programas (ver <a href="#agente-gravavel">Agente</a>). Para cadastrar os códigos, ver <a href="#codigos">códigos de recuperação</a>.</p>
           <div class="ex">
             <div class="line"><span class="c">pfm codes openai  <span class="hash"># copia o próximo e marca como usado</span></span><button type="button">Copiar</button></div>
             <div class="line"><span class="c">pfm codes openai --list  <span class="hash"># todos, com (used) nos usados</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm codes openai --stdout  <span class="hash"># o código sozinho, sem copiar</span></span><button type="button">Copiar</button></div>
           </div>
           <p class="note">Não há como desmarcar um código: rode <code>pfm codes</code> só na hora de usar. Marcar ao copiar é o lado seguro do erro: no pior caso sobra um código a menos, e nunca um já gasto volta para a lista. Se precisar refazer a lista, cole os códigos de novo com <code>pfm edit NOME --codes</code>.</p>
         </article>
@@ -465,7 +466,7 @@
 
     <section id="agente">
       <h2>Agente (programas)</h2>
-      <p class="sub">Programas (scripts, agentes de IA) não usam a sessão. Eles só leem os itens que você marcar, e nada mais do cofre.</p>
+      <p class="sub">Programas (scripts, agentes de IA) não usam a sessão. Eles só leem os itens que você marcar, e nada mais do cofre. Se você liberar, também guardam os itens que eles mesmos criam.</p>
       <div class="cards">
         <article class="cmd">
           <div class="tbl"><table>
@@ -485,6 +486,39 @@
             <div class="line"><span class="c">pfm lock  <span class="hash"># esvazia o agente agora</span></span><button type="button">Copiar</button></div>
           </div>
           <p class="note">Sem agente liberado, o <code>get --stdout</code> fora de um terminal falha na hora, em vez de ficar esperando uma frase que ninguém vai digitar.</p>
+        </article>
+        <article class="cmd" id="agente-gravavel">
+          <h3>pfm unlock --writable <span class="what">programas que guardam o que criam</span></h3>
+          <p>Com <code>--writable</code>, um programa também pode guardar itens no cofre, sem a frase mestra: um agente de IA que cria contas de teste numa aplicação que você o autorizou a testar guarda ali a senha, o segredo do 2FA e os códigos de recuperação, e os lê de volta depois. O programa só altera os itens que programas criaram. Os seus ele continua só lendo, e apenas os marcados com <code>--agent</code>.</p>
+          <div class="tbl"><table>
+            <tr><th>Comando</th><th>O que faz</th></tr>
+            <tr><td><code>pfm unlock --writable</code></td><td>você, no terminal: libera a leitura e a escrita por 8 horas (aceita <code>--for</code> e nomes de itens, como sempre)</td></tr>
+            <tr><td><code>pfm add NOME --agent-space</code></td><td>o programa cria um item; aceita <code>--username</code>, <code>--url</code>, <code>--generate</code> e <code>--kind</code></td></tr>
+            <tr><td><code>pfm edit NOME --agent-space</code></td><td>o programa altera um item que programas criaram; as opções do <code>edit</code>, menos anexos e <code>--agent</code></td></tr>
+            <tr><td><code>pfm get NOME --stdout</code></td><td>lê um valor; com <code>--field totp</code>, o código 2FA do momento</td></tr>
+            <tr><td><code>pfm codes NOME --stdout</code></td><td>imprime o próximo código de recuperação e o marca como usado</td></tr>
+            <tr><td><code>pfm list --agent-space</code></td><td>o que o agente guarda, sem segredos</td></tr>
+          </table></div>
+          <div class="ex">
+            <div class="line"><span class="c">pfm unlock --for 8h --writable  <span class="hash"># você, uma vez, com a frase mestra</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm add "acme teste admin" --agent-space --username admin@exemplo.com --url https://staging.exemplo.com --generate  <span class="hash"># o programa: conta com senha gerada</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">echo "$SENHA" | pfm add "acme teste usuario" --agent-space --username voce@exemplo.com  <span class="hash"># senha que o programa já tem, pelo stdin</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm get "acme teste admin" --stdout  <span class="hash"># lê a senha de volta</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">echo "$SEGREDO_2FA" | pfm edit "acme teste usuario" --agent-space --totp  <span class="hash"># guarda o segredo do 2FA</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm get "acme teste usuario" --field totp --stdout  <span class="hash"># o código 2FA de agora</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">printf '%s\n' "$CODIGO_1" "$CODIGO_2" | pfm edit "acme teste usuario" --agent-space --codes  <span class="hash"># guarda os códigos, um por linha</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm codes "acme teste usuario" --stdout  <span class="hash"># gasta um código</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm list --agent-space  <span class="hash"># o que o agente guarda</span></span><button type="button">Copiar</button></div>
+            <div class="line"><span class="c">pfm status  <span class="hash"># mostra se o agente aceita escrita e quantas mudanças esperam</span></span><button type="button">Copiar</button></div>
+          </div>
+          <p>Cada segredo entra por uma linha do stdin, nunca como argumento. O que o programa grava fica cifrado no notebook, e o <strong>seu próximo comando</strong> no terminal (qualquer um: <code>pfm list</code>, <code>pfm get</code>…) traz esses itens para o cofre e sincroniza. No <code>pfm list</code> eles aparecem como <code>agent-made</code> na coluna AGENT.</p>
+          <ul>
+            <li><strong>Os seus itens ficam fora do alcance</strong>: <code>edit --agent-space</code> e <code>codes --stdout</code> recusam um item que você criou, marcado ou não.</li>
+            <li><strong>Um item seu sempre ganha a busca</strong>: se um programa criar um item chamado <code>router</code>, <code>pfm get router</code> continua achando o seu <code>OpenRouter</code>.</li>
+            <li><strong>Apagar é com você</strong>: programas não apagam nem anexam arquivos. Use <code>pfm rm NOME</code>.</li>
+            <li><strong>Limites</strong>: até 200 itens criados por programas, de até 64 KiB cada.</li>
+          </ul>
+          <p class="note">Depois de reiniciar o computador ou de um <code>pfm lock</code>, o que foi gravado não se perde: entra no cofre no seu próximo comando. O programa só volta a ler e gravar depois de um novo <code>pfm unlock --writable</code>. Trate o que um programa guardou como vindo de fora: pode ter sido escrito pela aplicação que ele estava testando.</p>
         </article>
       </div>
     </section>
